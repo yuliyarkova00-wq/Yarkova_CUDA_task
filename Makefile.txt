@@ -1,0 +1,25 @@
+RCH ?= sm_60
+HOST_COMP ?= mpicc
+
+NVCC := nvcc
+
+NVCC_FLAGS = -O3 -std=c++11 -Xcompiler "-Wall -Wextra" -ccbin=$(HOST_COMP) -arch=$(ARCH)
+
+MPI_INCLUDE = -I/opt/ibm/spectrum_mpi/include
+MPI_LIB     = -L/opt/ibm/spectrum_mpi/lib -lmpiprofilesupport -lmpi_ibm
+
+SRC_CPP = wave_mpi_cu.cpp
+SRC_CU  = kernel.cu
+
+TARGET = run_mpi_cu
+
+all: $(TARGET)
+
+$(TARGET):
+	$(NVCC) $(NVCC_FLAGS) $(MPI_INCLUDE) \
+	$(SRC_CPP) $(SRC_CU) \
+	$(MPI_LIB) -lcudart -lstdc++ \
+	-o $(TARGET)
+
+clean:
+	rm -f $(TARGET)
